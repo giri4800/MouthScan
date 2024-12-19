@@ -75,9 +75,10 @@ def dashboard():
 @app.route('/history')
 @login_required
 def history():
+    from models import Analysis
     analyses = None
     if current_user.is_authenticated:
-        analyses = current_user.analyses.order_by(Analysis.created_at.desc()).all()
+        analyses = Analysis.query.filter_by(user_id=current_user.id).order_by(Analysis.created_at.desc()).all()
     return render_template('history.html', analyses=analyses)
 
 @app.route('/upload', methods=['POST'])
