@@ -30,7 +30,7 @@ class AIAnalyzer:
                     "content": [
                         {
                             "type": "text",
-                            "text": "Analyze this dental image and tell me if there are any visible issues. Return the result in this format: [result, confidence]. Result should be either 'Normal' or 'Abnormal'."
+                            "text": "You are a dental analysis assistant. Analyze this dental image and provide your analysis in this exact format (no other text): Normal,0.95 or Abnormal,0.85 where the first part is your assessment and the second is your confidence score."
                         },
                         {
                             "type": "image",
@@ -44,9 +44,9 @@ class AIAnalyzer:
                 }]
             )
 
-            # Parse response
-            response_text = message.content[0].text
-            result, confidence = eval(response_text)
+            # Parse response - expecting format like "Normal,0.95" or "Abnormal,0.85"
+            response_text = message.content[0].text.strip()
+            result, confidence = response_text.split(',')
             
             return result, float(confidence)
             
