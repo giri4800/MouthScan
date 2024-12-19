@@ -85,13 +85,24 @@ def upload_image():
     if file:
         try:
             # Save the file with absolute path
+            # Create unique filename with timestamp
+            import time
+            timestamp = int(time.time())
+            filename = f"{timestamp}_{secure_filename(file.filename)}"
+            
+            # Ensure upload directory exists
             upload_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
             os.makedirs(upload_dir, exist_ok=True)
             
-            filename = secure_filename(file.filename)
             filepath = os.path.join(upload_dir, filename)
             logger.debug(f"Saving uploaded file to: {filepath}")
             file.save(filepath)
+            
+            # Validate file type
+            allowed_extensions = {'png', 'jpg', 'jpeg'}
+            if not '.' in filename or filename.rsplit('.', 1)[1].lower() not in allowed_extensions:
+                os.remove(filepath)
+                return jsonify({'error': 'Invalid file type'}), 400
             
             # Analyze the image
             from utils.ai_analyzer import AIAnalyzer

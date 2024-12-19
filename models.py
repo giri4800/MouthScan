@@ -25,3 +25,23 @@ class Analysis(db.Model):
     confidence = db.Column(db.Float)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(20), default='pending')
+from datetime import datetime
+from app import db
+
+class Analysis(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    image_path = db.Column(db.String(500), nullable=False)
+    result = db.Column(db.String(100))
+    confidence = db.Column(db.Float)
+    status = db.Column(db.String(20), default='pending')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'result': self.result,
+            'confidence': self.confidence,
+            'status': self.status,
+            'created_at': self.created_at.isoformat()
+        }
