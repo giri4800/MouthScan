@@ -1,17 +1,20 @@
-
 import os
 import logging
 from flask import Flask, render_template, request, jsonify, abort
+from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_required, current_user
+from sqlalchemy.orm import DeclarativeBase
 from werkzeug.utils import secure_filename
-from db import db
-from models import User, Analysis
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG,
                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+class Base(DeclarativeBase):
+    pass
+
+db = SQLAlchemy(model_class=Base)
 login_manager = LoginManager()
 
 def create_app():
@@ -20,7 +23,7 @@ def create_app():
     try:
         # Configuration
         app.config['SECRET_KEY'] = os.environ.get("FLASK_SECRET_KEY", "dev_key")
-        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///app.db")
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
             "pool_recycle": 300,
@@ -34,6 +37,8 @@ def create_app():
         login_manager.login_view = 'auth.login'
         
         with app.app_context():
+            # Import models here to avoid circular imports
+            from models import User, Analysis  # noqa: F401
             logger.info("Creating database tables...")
             db.create_all()
             
@@ -51,8 +56,10 @@ app = create_app()
 
 @login_manager.user_loader
 def load_user(user_id):
+    from models import User
     return User.query.get(int(user_id))
 
+# Main routes
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -68,16 +75,8 @@ def dashboard():
 @app.route('/history')
 @login_required
 def history():
-    analyses = Analysis.query.filter_by(user_id=current_user.id).order_by(Analysis.created_at.desc()).all()
+    analyses = current_user.analyses.order_by(Analysis.created_at.desc()).all()
     return render_template('history.html', analyses=analyses)
-
-@app.route('/analysis/<int:id>')
-@login_required
-def analysis(id):
-    analysis = Analysis.query.get_or_404(id)
-    if analysis.user_id != current_user.id:
-        abort(403)
-    return render_template('analysis.html', analysis=analysis)
 
 @app.route('/upload', methods=['POST'])
 @login_required
@@ -91,10 +90,13 @@ def upload_image():
     
     if file:
         try:
+            # Save the file with absolute path
+            # Create unique filename with timestamp
             import time
             timestamp = int(time.time())
             filename = f"{timestamp}_{secure_filename(file.filename)}"
             
+            # Ensure upload directory exists
             upload_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
             os.makedirs(upload_dir, exist_ok=True)
             
@@ -102,15 +104,19 @@ def upload_image():
             logger.debug(f"Saving uploaded file to: {filepath}")
             file.save(filepath)
             
+            # Validate file type
             allowed_extensions = {'png', 'jpg', 'jpeg'}
             if not '.' in filename or filename.rsplit('.', 1)[1].lower() not in allowed_extensions:
                 os.remove(filepath)
                 return jsonify({'error': 'Invalid file type'}), 400
             
+            # Analyze the image
             from utils.ai_analyzer import AIAnalyzer
             analyzer = AIAnalyzer()
             result, confidence = analyzer.analyze_image(filepath)
             
+            # Create analysis record
+            from models import Analysis
             analysis = Analysis(
                 user_id=current_user.id,
                 image_path=filepath,
@@ -129,3 +135,12 @@ def upload_image():
             return jsonify({'error': 'Failed to process image'}), 500
     
     return jsonify({'error': 'Invalid file'}), 400
+
+@app.route('/analysis/<int:id>')
+@login_required
+def analysis(id):
+    from models import Analysis
+    analysis = Analysis.query.get_or_404(id)
+    if analysis.user_id != current_user.id:
+        abort(403)
+    return render_template('analysis.html', analysis=analysis)

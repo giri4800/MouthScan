@@ -49,28 +49,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     formData.append('image', blob, 'capture.jpg');
                     
                     try {
-                        const loadingOverlay = document.getElementById('loadingOverlay');
-                        loadingOverlay.classList.remove('d-none');
-                        
+                        document.getElementById('loadingOverlay').classList.remove('d-none');
                         const response = await fetch('/upload', {
                             method: 'POST',
-                            body: formData
+                            body: formData,
+                            headers: {
+                                'X-Capture-Method': 'camera'
+                            }
                         });
                         
-                        const result = await response.json();
-                        
-                        if (response.ok && result.analysis_id) {
+                        if (response.ok) {
+                            const result = await response.json();
                             window.location.href = `/analysis/${result.analysis_id}`;
                         } else {
-                            alert('Analysis failed: ' + (result.error || 'Unable to analyze image. Please try a clearer image.'));
-                            window.location.href = '/dashboard';
+                            throw new Error('Upload failed');
                         }
                     } catch (error) {
                         console.error('Error:', error);
-                        alert('Analysis failed: Image could not be processed. Please try again with a different image.');
-                        window.location.href = '/dashboard';
+                        alert('Failed to upload image. Please try again.');
                     } finally {
-                        loadingOverlay.classList.add('d-none');
+                        document.getElementById('loadingOverlay').classList.add('d-none');
                     }
                 }, 'image/jpeg', 0.9);
             }
