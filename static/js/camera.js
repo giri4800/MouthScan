@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function() {
     const startButton = document.getElementById('startCamera');
     const captureButton = document.getElementById('captureImage');
@@ -63,11 +62,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (response.ok && result.analysis_id) {
                             window.location.href = `/analysis/${result.analysis_id}`;
                         } else {
-                            throw new Error(result.error || 'Analysis failed');
+                            alert('Analysis failed: ' + (result.error || 'Unable to analyze image. Please try a clearer image.'));
+                            window.location.href = '/dashboard';
                         }
                     } catch (error) {
                         console.error('Error:', error);
-                        alert('Analysis failed: ' + error.message);
+                        alert('Analysis failed: Image could not be processed. Please try again with a different image.');
                         window.location.href = '/dashboard';
                     } finally {
                         loadingOverlay.classList.add('d-none');
