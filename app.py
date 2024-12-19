@@ -68,6 +68,8 @@ def dashboard():
 @app.route('/history')
 @login_required
 def history():
+    analyses = Analysis.query.filter_by(user_id=current_user.id).order_by(Analysis.created_at.desc()).all()
+    return render_template('history.html', analyses=analyses)
 
 @app.route('/analysis/<int:id>')
 @login_required
@@ -76,9 +78,6 @@ def analysis(id):
     if analysis.user_id != current_user.id:
         abort(403)
     return render_template('analysis.html', analysis=analysis)
-
-    analyses = Analysis.query.filter_by(user_id=current_user.id).order_by(Analysis.created_at.desc()).all()
-    return render_template('history.html', analyses=analyses)
 
 @app.route('/upload', methods=['POST'])
 @login_required
