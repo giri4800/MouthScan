@@ -38,7 +38,7 @@ def create_app():
         
         with app.app_context():
             # Import models here to avoid circular imports
-            from models import User, Analysis
+            from models import User, Analysis  # noqa: F401
             logger.info("Creating database tables...")
             db.create_all()
             
@@ -84,10 +84,13 @@ def upload_image():
     
     if file:
         try:
-            # Save the file
+            # Save the file with absolute path
+            upload_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+            os.makedirs(upload_dir, exist_ok=True)
+            
             filename = secure_filename(file.filename)
-            filepath = os.path.join('uploads', filename)
-            os.makedirs('uploads', exist_ok=True)
+            filepath = os.path.join(upload_dir, filename)
+            logger.debug(f"Saving uploaded file to: {filepath}")
             file.save(filepath)
             
             # Analyze the image
@@ -96,6 +99,7 @@ def upload_image():
             result, confidence = analyzer.analyze_image(filepath)
             
             # Create analysis record
+            from models import Analysis
             analysis = Analysis(
                 user_id=current_user.id,
                 image_path=filepath,
