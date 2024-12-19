@@ -1,3 +1,4 @@
+
 :root {
     --primary-color: #2c7be5;
     --secondary-color: #6e84a3;
@@ -12,102 +13,113 @@ body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     color: var(--dark-color);
     background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.navbar {
+.navbar-glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
     box-shadow: 0 2px 4px rgba(0,0,0,.08);
 }
 
-.navbar-brand i {
-    color: var(--primary-color);
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
 }
 
-.hero-section {
-    padding: 4rem 0;
-    background: linear-gradient(to bottom, #fff, #f8f9fa);
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
-.feature-card {
-    background: white;
-    border-radius: 8px;
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
     box-shadow: 0 4px 6px rgba(0,0,0,.05);
-    transition: transform 0.2s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
 }
 
-.feature-card:hover {
+.card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0,0,0,.1);
 }
 
-.feature-icon {
-    width: 48px;
-    height: 48px;
-    color: var(--primary-color);
-    margin-bottom: 1rem;
+.btn {
+    padding: 0.6rem 1.5rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: darken(var(--primary-color), 10%);
+    transform: translateY(-2px);
 }
 
 .camera-container {
     position: relative;
     min-height: 300px;
-    background: #f8f9fa;
-    border-radius: 8px;
+    background: var(--light-color);
+    border-radius: 15px;
     overflow: hidden;
 }
 
 #camera, #preview {
     width: 100%;
     max-width: 100%;
-    border-radius: 8px;
+    border-radius: 15px;
 }
 
-.analysis-details .result-box {
-    border-radius: 8px;
+.analysis-card {
+    height: 100%;
+}
+
+.analysis-image {
+    height: 200px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.analysis-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.result-box {
+    border-radius: 10px;
     padding: 1.5rem;
     margin: 1rem 0;
+    text-align: center;
 }
 
-.btn {
-    padding: 0.5rem 1.5rem;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-.btn-primary:hover {
-    background-color: darken(var(--primary-color), 10%);
-    border-color: darken(var(--primary-color), 10%);
-}
-
-.card {
-    border: none;
-    border-radius: 8px;
-    transition: box-shadow 0.2s ease;
-}
-
-.card:hover {
-    box-shadow: 0 8px 16px rgba(0,0,0,.1);
-}
-
-#imagePreview img {
-    max-height: 300px;
-    object-fit: contain;
-    margin: 1rem 0;
-}
-
-.alert {
-    border-radius: 6px;
-    border: none;
-}
-
-@media (max-width: 768px) {
-    .hero-section {
-        padding: 2rem 0;
-    }
-    
-    .feature-card {
-        margin-bottom: 1rem;
-    }
+.footer {
+    margin-top: auto;
+    background: var(--light-color);
+    padding: 1.5rem 0;
 }

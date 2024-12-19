@@ -49,9 +49,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     formData.append('image', blob, 'capture.jpg');
                     
                     try {
+                        document.getElementById('loadingOverlay').classList.remove('d-none');
                         const response = await fetch('/upload', {
                             method: 'POST',
-                            body: formData
+                            body: formData,
+                            headers: {
+                                'X-Capture-Method': 'camera'
+                            }
                         });
                         
                         if (response.ok) {
@@ -63,8 +67,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     } catch (error) {
                         console.error('Error:', error);
                         alert('Failed to upload image. Please try again.');
+                    } finally {
+                        document.getElementById('loadingOverlay').classList.add('d-none');
                     }
-                }, 'image/jpeg', 0.8);
+                }, 'image/jpeg', 0.9);
             }
         });
     }

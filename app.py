@@ -72,6 +72,12 @@ def dashboard():
         analyses = current_user.analyses
     return render_template('dashboard.html', analyses=analyses)
 
+@app.route('/history')
+@login_required
+def history():
+    analyses = current_user.analyses.order_by(Analysis.created_at.desc()).all()
+    return render_template('history.html', analyses=analyses)
+
 @app.route('/upload', methods=['POST'])
 @login_required
 def upload_image():

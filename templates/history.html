@@ -1,0 +1,35 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="history-container">
+    <h1 class="mb-4" data-aos="fade-down">Analysis History</h1>
+    
+    <div class="row">
+        {% for analysis in analyses %}
+        <div class="col-md-6 mb-4" data-aos="fade-up">
+            <div class="card analysis-card">
+                <div class="card-body">
+                    <div class="analysis-image">
+                        <img src="{{ analysis.image_path }}" alt="Analysis Image" class="img-fluid rounded">
+                    </div>
+                    <div class="analysis-details mt-3">
+                        <h5 class="card-title">Analysis #{{ analysis.id }}</h5>
+                        <p class="date">{{ analysis.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        <div class="result-box p-3 rounded 
+                            {% if analysis.result == 'Normal' %}bg-success text-white
+                            {% else %}bg-warning{% endif %}">
+                            <h3>{{ analysis.result }}</h3>
+                            <p>Confidence: {{ "%.2f"|format(analysis.confidence * 100) }}%</p>
+                        </div>
+                        <a href="{{ url_for('analysis', id=analysis.id) }}" class="btn btn-primary mt-3">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
