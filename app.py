@@ -133,6 +133,7 @@ def upload_image():
 @app.route('/analysis/<int:id>')
 @login_required
 def analysis(id):
+    from models import Analysis
     analysis = Analysis.query.get_or_404(id)
     if analysis.user_id != current_user.id:
         abort(403)
