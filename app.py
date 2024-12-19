@@ -4,7 +4,8 @@ import logging
 from flask import Flask, render_template, request, jsonify, abort
 from flask_login import LoginManager, login_required, current_user
 from werkzeug.utils import secure_filename
-from models import db, User, Analysis
+from db import db
+from models import User, Analysis
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG,
@@ -67,6 +68,15 @@ def dashboard():
 @app.route('/history')
 @login_required
 def history():
+
+@app.route('/analysis/<int:id>')
+@login_required
+def analysis(id):
+    analysis = Analysis.query.get_or_404(id)
+    if analysis.user_id != current_user.id:
+        abort(403)
+    return render_template('analysis.html', analysis=analysis)
+
     analyses = Analysis.query.filter_by(user_id=current_user.id).order_by(Analysis.created_at.desc()).all()
     return render_template('history.html', analyses=analyses)
 
