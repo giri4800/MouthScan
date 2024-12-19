@@ -1,0 +1,113 @@
+:root {
+    --primary-color: #2c7be5;
+    --secondary-color: #6e84a3;
+    --success-color: #00d97e;
+    --warning-color: #f6c343;
+    --danger-color: #e63757;
+    --light-color: #f9fbfd;
+    --dark-color: #12263f;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--dark-color);
+    background-color: #f8f9fa;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.08);
+}
+
+.navbar-brand i {
+    color: var(--primary-color);
+}
+
+.hero-section {
+    padding: 4rem 0;
+    background: linear-gradient(to bottom, #fff, #f8f9fa);
+}
+
+.feature-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,.05);
+    transition: transform 0.2s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.camera-container {
+    position: relative;
+    min-height: 300px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#camera, #preview {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+.analysis-details .result-box {
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: darken(var(--primary-color), 10%);
+    border-color: darken(var(--primary-color), 10%);
+}
+
+.card {
+    border: none;
+    border-radius: 8px;
+    transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px rgba(0,0,0,.1);
+}
+
+#imagePreview img {
+    max-height: 300px;
+    object-fit: contain;
+    margin: 1rem 0;
+}
+
+.alert {
+    border-radius: 6px;
+    border: none;
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 2rem 0;
+    }
+    
+    .feature-card {
+        margin-bottom: 1rem;
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "name": "MouthCare AI",
+    "short_name": "MouthCare",
+    "description": "AI-powered oral cancer detection application",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#2c7be5",
+    "icons": [
+        {
+            "src": "https://cdn.jsdelivr.net/npm/feather-icons/dist/icons/heart.svg",
+            "sizes": "192x192",
+            "type": "image/svg+xml"
+        }
+    ]
+}

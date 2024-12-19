@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="analysis-container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title">Analysis Results</h2>
+                    <div class="analysis-details">
+                        <p class="date">Date: {{ analysis.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        <div class="result-box p-3 rounded 
+                            {% if analysis.result == 'Normal' %}bg-success text-white
+                            {% else %}bg-warning{% endif %}">
+                            <h3>{{ analysis.result }}</h3>
+                            <p>Confidence: {{ "%.2f"|format(analysis.confidence * 100) }}%</p>
+                        </div>
+                        
+                        <div class="recommendations mt-4">
+                            <h4>Recommendations</h4>
+                            <ul class="list-group">
+                                {% if analysis.result == 'Normal' %}
+                                <li class="list-group-item">Continue regular oral health checkups</li>
+                                <li class="list-group-item">Maintain good oral hygiene</li>
+                                {% else %}
+                                <li class="list-group-item">Consult a healthcare professional</li>
+                                <li class="list-group-item">Schedule an appointment with an oral specialist</li>
+                                <li class="list-group-item">Bring these results to your consultation</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title">Analyzed Image</h2>
+                    <img src="{{ analysis.image_path }}" alt="Analyzed Image" class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title">Next Steps</h2>
+                    <div class="next-steps">
+                        <p>Remember that this AI analysis is meant to be a preliminary screening tool
+                           and should not replace professional medical advice.</p>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                                Back to Dashboard
+                            </a>
+                            <button class="btn btn-outline-primary" onclick="window.print()">
+                                Print Results
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section text-center py-5">
+    <h1 class="display-4">Early Detection Saves Lives</h1>
+    <p class="lead">Use AI-powered technology to detect early signs of oral cancer</p>
+    
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d" 
+                 alt="Medical Professional" 
+                 class="img-fluid rounded shadow">
+        </div>
+        <div class="col-md-6">
+            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f" 
+                 alt="Healthcare Technology" 
+                 class="img-fluid rounded shadow">
+        </div>
+    </div>
+
+    <div class="cta-section mt-5">
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+        {% else %}
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">Get Started</a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg ms-3">Login</a>
+        {% endif %}
+    </div>
+</div>
+
+<section class="features py-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="feature-card text-center p-4">
+                <i data-feather="camera" class="feature-icon"></i>
+                <h3>Easy Image Capture</h3>
+                <p>Take photos directly through your device's camera or upload existing images</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card text-center p-4">
+                <i data-feather="cpu" class="feature-icon"></i>
+                <h3>AI Analysis</h3>
+                <p>Advanced AI technology analyzes images for potential signs of oral cancer</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card text-center p-4">
+                <i data-feather="clock" class="feature-icon"></i>
+                <h3>Quick Results</h3>
+                <p>Receive analysis results within minutes with detailed explanations</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
