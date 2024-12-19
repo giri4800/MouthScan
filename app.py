@@ -38,7 +38,7 @@ def create_app():
         
         with app.app_context():
             # Import models here to avoid circular imports
-            from models import User, Analysis  # noqa: F401
+            from models import User, Analysis
             logger.info("Creating database tables...")
             db.create_all()
             
@@ -71,6 +71,14 @@ def dashboard():
     if current_user.is_authenticated:
         analyses = current_user.analyses
     return render_template('dashboard.html', analyses=analyses)
+
+@app.route('/history')
+@login_required
+def history():
+    analyses = None
+    if current_user.is_authenticated:
+        analyses = current_user.analyses.order_by(Analysis.created_at.desc()).all()
+    return render_template('history.html', analyses=analyses)
 
 @app.route('/upload', methods=['POST'])
 @login_required
