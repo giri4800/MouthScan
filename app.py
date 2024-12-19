@@ -52,4 +52,71 @@ app = create_app()
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# Routes remain the same...
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    analyses = None
+    if current_user.is_authenticated:
+        analyses = current_user.analyses
+    return render_template('dashboard.html', analyses=analyses)
+
+@app.route('/history')
+@login_required
+def history():
+    analyses = Analysis.query.filter_by(user_id=current_user.id).order_by(Analysis.created_at.desc()).all()
+    return render_template('history.html', analyses=analyses)
+
+@app.route('/upload', methods=['POST'])
+@login_required
+def upload_image():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image provided'}), 400
+    
+    file = request.files['image']
+    if file.filename == '':
+        return jsonify({'error': 'No image selected'}), 400
+    
+    if file:
+        try:
+            import time
+            timestamp = int(time.time())
+            filename = f"{timestamp}_{secure_filename(file.filename)}"
+            
+            upload_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+            os.makedirs(upload_dir, exist_ok=True)
+            
+            filepath = os.path.join(upload_dir, filename)
+            logger.debug(f"Saving uploaded file to: {filepath}")
+            file.save(filepath)
+            
+            allowed_extensions = {'png', 'jpg', 'jpeg'}
+            if not '.' in filename or filename.rsplit('.', 1)[1].lower() not in allowed_extensions:
+                os.remove(filepath)
+                return jsonify({'error': 'Invalid file type'}), 400
+            
+            from utils.ai_analyzer import AIAnalyzer
+            analyzer = AIAnalyzer()
+            result, confidence = analyzer.analyze_image(filepath)
+            
+            analysis = Analysis(
+                user_id=current_user.id,
+                image_path=filepath,
+                result=result,
+                confidence=confidence,
+                status='completed'
+            )
+            db.session.add(analysis)
+            db.session.commit()
+            
+            logger.info(f"Analysis completed for user {current_user.id}: {result} ({confidence:.2%})")
+            return jsonify({'analysis_id': analysis.id}), 200
+            
+        except Exception as e:
+            logger.error(f"Error processing upload: {str(e)}")
+            return jsonify({'error': 'Failed to process image'}), 500
+    
+    return jsonify({'error': 'Invalid file'}), 400
