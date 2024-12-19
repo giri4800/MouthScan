@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function() {
     const startButton = document.getElementById('startCamera');
     const captureButton = document.getElementById('captureImage');
@@ -49,26 +50,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     formData.append('image', blob, 'capture.jpg');
                     
                     try {
-                        document.getElementById('loadingOverlay').classList.remove('d-none');
+                        const loadingOverlay = document.getElementById('loadingOverlay');
+                        loadingOverlay.classList.remove('d-none');
+                        
                         const response = await fetch('/upload', {
                             method: 'POST',
-                            body: formData,
-                            headers: {
-                                'X-Capture-Method': 'camera'
-                            }
+                            body: formData
                         });
                         
-                        if (response.ok) {
-                            const result = await response.json();
+                        const result = await response.json();
+                        
+                        if (response.ok && result.analysis_id) {
                             window.location.href = `/analysis/${result.analysis_id}`;
                         } else {
-                            throw new Error('Upload failed');
+                            throw new Error(result.error || 'Analysis failed');
                         }
                     } catch (error) {
                         console.error('Error:', error);
-                        alert('Failed to upload image. Please try again.');
+                        alert('Analysis failed: ' + error.message);
+                        window.location.href = '/dashboard';
                     } finally {
-                        document.getElementById('loadingOverlay').classList.add('d-none');
+                        loadingOverlay.classList.add('d-none');
                     }
                 }, 'image/jpeg', 0.9);
             }
