@@ -68,22 +68,43 @@ class AIAnalyzer:
                 temperature=0.0,
                 messages=[{
                     "role": "user",
-                    "content": [{
-                        "type": "text",
-                        "text": "Analyze this oral cavity image for potential signs of mouth cancer. Look for suspicious lesions, discolorations, or abnormal growths. Keep your response concise and factual."
-                    }]
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Please analyze this oral cavity image for potential signs of mouth cancer. Focus on:\n"
+                                   "1. Suspicious lesions or ulcers\n"
+                                   "2. Unusual patches (white, red, or mixed)\n"
+                                   "3. Unexplained swelling or lumps\n"
+                                   "4. Texture changes in the oral tissue\n"
+                                   "Provide a concise assessment with your confidence level (0-100%)."
+                        },
+                        {
+                            "type": "image",
+                            "source": {
+                                "type": "base64",
+                                "media_type": "image/jpeg",
+                                "data": encoded_image.split(',')[1]  # Remove the data:image/jpeg;base64, prefix
+                            }
+                        }
+                    ]
                 }]
             )
-
-            # Extract the response and parse it
-            # Temporary: Return simulated results while debugging API integration
-            logger.info("Using simulated analysis results for testing")
-            import random
-            is_normal = random.choice([True, False])
-            if is_normal:
-                return "Normal - No concerning features detected", 0.95
-            else:
-                return "Suspicious - Requires Medical Attention", 0.85
+            
+            # Extract and process the response
+            if message.content:
+                response_text = message.content[0].text
+                logger.info(f"Received analysis response: {response_text}")
+                
+                # Extract confidence level (default to 70% if not found)
+                confidence = 0.7
+                if "%" in response_text:
+                    try:
+                        confidence_str = response_text.split("%")[0][-3:].strip()
+                        confidence = float(confidence_str) / 100
+                    except (ValueError, IndexError):
+                        logger.warning("Could not parse confidence level from response")
+                
+                return response_text.split('\n')[0], confidence  # Return first line and confidence
 
         except Exception as e:
             logger.error(f"Error analyzing image: {str(e)}")
